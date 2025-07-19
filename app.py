@@ -1,5 +1,3 @@
-# personal_finance_advisor_app.py (Flask Version)
-
 from flask import Flask, request, jsonify, render_template
 from langgraph.graph import StateGraph, END
 from langchain_core.runnables import RunnableLambda
@@ -7,6 +5,7 @@ from groq import Groq
 import os
 import re
 import requests
+import math
 from dotenv import load_dotenv
 
 # === Load environment variables ===
@@ -27,7 +26,9 @@ def parse_financial_input(user_data):
         "goal_amount": extract_int(user_data["goal"]),
         "income": extract_int(user_data["income"]),
         "debt": extract_int(user_data.get("debt", 0)),
-        "age": int(user_data["age"])
+        "age": int(user_data["age"]),
+        "time_horizon_years": int(user_data.get("time_horizon_years", 5)),  # optional input
+        "risk_tolerance": user_data.get("risk_tolerance", "medium")  # optional input
     }
 
 # === Agent 1: Financial Profile Extractor ===
@@ -40,13 +41,18 @@ def financial_profile_agent(state):
 def risk_analyzer_agent(state):
     profile = state["profile"]
     prompt = f"""
-    Analyze the financial risk and spending behavior:
+    Analyze the user's financial situation:
 
     Income: ₹{profile['income']}/month
     Debt: ₹{profile['debt']}
     Age: {profile['age']}
+    Risk Tolerance: {profile['risk_tolerance']}
 
-    Provide a short analysis including risk level (low/medium/high), whether spending is sustainable, and financial health.
+    Provide:
+    - Risk tolerance (low/medium/high)
+    - Debt health
+    - Spending sustainability
+    - Financial behavior insights
     """
     res = client.chat.completions.create(
         model="llama-3.3-70b-versatile",
@@ -54,7 +60,7 @@ def risk_analyzer_agent(state):
     )
     return {"risk_analysis": res.choices[0].message.content.strip()}
 
-# === Fetch Real-Time FD Rates ===
+# === FD Rates API Fallback ===
 def fetch_fd_rates():
     try:
         url = "https://api.bankbazaar.com/fixed-deposit/v1/fdrates"
@@ -65,40 +71,90 @@ def fetch_fd_rates():
             for bank in data.get("bankRateList", [])[:5]
         ]
     except:
-        return ["HDFC Bank: 7.1%", "SBI: 6.8%", "ICICI: 7.0%"]  # fallback
+        return ["HDFC: 7.1%", "SBI: 6.8%", "ICICI: 7.0%"]
 
-# === Agent 3: Investment Planner ===
+# === Agent 3: Investment Planner (Dynamic & Smart) ===
 def investment_planner_agent(state):
     profile = state["profile"]
-    fd_rates = fetch_fd_rates()
-    prompt = f"""
-    User Profile:
-    Age: {profile['age']}
-    Income: ₹{profile['income']}/month
-    Goal: Save ₹{profile['goal_amount']} in 5 years
+    income = profile["income"]
+    goal = profile["goal_amount"]
+    age = profile["age"]
+    debt = profile["debt"]
+    years = profile.get("time_horizon_years", 5)
+    months = years * 12
+    rate = 0.10 / 12  # assume 10% annual return, monthly compounding
 
-    Plan an investment strategy using FDs, SIPs, stocks, and gold. Show approximate monthly saving required and asset allocation.
-    Also include latest FD interest rates:
-    {' | '.join(fd_rates)}
+    try:
+        monthly_saving = goal * rate / (math.pow(1 + rate, months) - 1)
+        monthly_saving = round(monthly_saving, 2)
+    except:
+        monthly_saving = round(goal / months, 2)
+
+    # Affordability Analysis
+    if monthly_saving > income:
+        affordability_note = f"⚠️ To reach ₹{goal} in {years} years, you'd need to save ₹{monthly_saving}/month — which exceeds your monthly income of ₹{income}."
+        suggestion = "Consider extending your timeline or reducing your goal."
+    else:
+        affordability_note = f"✅ You need to save approximately ₹{monthly_saving}/month to reach ₹{goal} in {years} years."
+        suggestion = "This is feasible with your current income."
+
+    # Smart Allocation Prompt (Dynamic)
+    prompt = f"""
+    Given the following user profile, generate a personalized investment allocation:
+
+    Age: {age}
+    Monthly Income: ₹{income}
+    Current Debt: ₹{debt}
+    Financial Goal: ₹{goal} in {years} years
+    Risk Tolerance: {profile['risk_tolerance']}
+    Monthly Saving Target: ₹{monthly_saving}
+
+    Recommend a dynamic allocation across:
+    - Equity SIPs (mutual funds)
+    - Fixed Deposits
+    - Gold
+    - Emergency Fund
+
+    Format:
+    - Bullet points with percentages
+    - 1-2 line explanation per choice
+    - Optional tax-saving ideas
+    - No generic advice — make it tailored
     """
+
     res = client.chat.completions.create(
         model="llama-3.3-70b-versatile",
         messages=[{"role": "user", "content": prompt}]
     )
-    return {"investment_plan": res.choices[0].message.content.strip()}
 
-# === Agent 4: Strategy Summary ===
+    fd_rates = fetch_fd_rates()
+
+    return {
+        "investment_plan": f"""
+{affordability_note}
+{suggestion}
+
+{res.choices[0].message.content.strip()}
+
+🪙 Latest FD Rates:
+{' | '.join(fd_rates)}
+"""
+    }
+
+# === Agent 4: Strategy Summary Generator ===
 def strategy_summary_agent(state):
     plan = state["investment_plan"]
     risk = state["risk_analysis"]
     prompt = f"""
-    Summarize the personal finance strategy below in plain English:
+    Summarize the following strategy for a non-financial user in simple language.
 
     Risk Analysis:
     {risk}
 
     Investment Plan:
     {plan}
+
+    Provide a motivating conclusion and main action items.
     """
     res = client.chat.completions.create(
         model="llama-3.3-70b-versatile",
@@ -106,8 +162,8 @@ def strategy_summary_agent(state):
     )
     return {"summary": res.choices[0].message.content.strip()}
 
-# === LangGraph: Multi-Agent Pipeline ===
-from typing import TypedDict, Any
+# === LangGraph Workflow Setup ===
+from typing import TypedDict
 
 class FinanceState(TypedDict):
     user: dict
@@ -131,7 +187,7 @@ workflow.add_edge("summary", END)
 
 app_graph = workflow.compile()
 
-# === Web Routes ===
+# === Flask Routes ===
 @app.route("/", methods=["GET", "POST"])
 def index():
     if request.method == "POST":
@@ -140,7 +196,6 @@ def index():
         return jsonify(result)
     return render_template("index.html")
 
-# === Run Server ===
+# === Run the App ===
 if __name__ == "__main__":
-    app.run(debug=False, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
-
+    app.run(debug=False, host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))

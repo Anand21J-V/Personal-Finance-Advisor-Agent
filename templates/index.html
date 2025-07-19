@@ -1,4 +1,4 @@
-
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -277,6 +277,11 @@
             overflow: hidden;
         }
 
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
         .submit-btn::before {
             content: '';
             position: absolute;
@@ -288,12 +293,12 @@
             transition: all 0.6s ease;
         }
 
-        .submit-btn:hover {
+        .submit-btn:hover:not(:disabled) {
             transform: translateY(-3px);
             box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
         }
 
-        .submit-btn:hover::before {
+        .submit-btn:hover:not(:disabled)::before {
             left: 100%;
         }
 
@@ -359,6 +364,17 @@
             animation: slideInRight 0.6s ease-out;
         }
 
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
         .result-card h3 {
             color: var(--primary-green);
             font-size: 1.2rem;
@@ -373,6 +389,16 @@
             color: rgba(255, 255, 255, 0.9);
             line-height: 1.6;
             font-size: 0.95rem;
+            white-space: pre-line;
+        }
+
+        .error-card {
+            background: rgba(255, 59, 48, 0.1);
+            border-left: 4px solid #ff3b30;
+        }
+
+        .error-card h3 {
+            color: #ff3b30;
         }
 
         /* Features Grid */
@@ -518,7 +544,7 @@
                 <div class="logo-icon">₹</div>
                 <div class="logo-text">FinanceAI</div>
             </div>
-            <p class="subtitle">Your Intelligent Personal Finance Advisor</p>
+            <p class="subtitle">Your Intelligent Personal Finance Advisor powered by AI</p>
         </header>
 
         <!-- Main Content -->
@@ -531,11 +557,13 @@
                         <label for="goal">Financial Goal</label>
                         <select id="goal" name="goal" required>
                             <option value="">Select your primary goal</option>
-                            <option value="500000">Save ₹5 Lakh (Emergency Fund)</option>
-                            <option value="1000000">Save ₹10 Lakh (Home Down Payment)</option>
-                            <option value="2500000">Save ₹25 Lakh (Higher Education)</option>
-                            <option value="5000000">Save ₹50 Lakh (Retirement Planning)</option>
-                            <option value="10000000">Save ₹1 Crore (Wealth Building)</option>
+                            <option value="Emergency Fund - ₹5,00,000">Emergency Fund - ₹5,00,000</option>
+                            <option value="Home Down Payment - ₹15,00,000">Home Down Payment - ₹15,00,000</option>
+                            <option value="Car Purchase - ₹8,00,000">Car Purchase - ₹8,00,000</option>
+                            <option value="Child Education - ₹25,00,000">Child Education - ₹25,00,000</option>
+                            <option value="Retirement Planning - ₹1,00,00,000">Retirement Planning - ₹1,00,00,000</option>
+                            <option value="Wedding - ₹10,00,000">Wedding - ₹10,00,000</option>
+                            <option value="Business Investment - ₹50,00,000">Business Investment - ₹50,00,000</option>
                         </select>
                     </div>
 
@@ -553,7 +581,7 @@
                         <div style="position: relative;">
                             <span class="currency-prefix">₹</span>
                             <input type="text" id="debt" name="debt" class="currency-input" 
-                                   placeholder="0">
+                                   placeholder="0 (Leave blank if no debt)">
                         </div>
                     </div>
 
@@ -562,8 +590,29 @@
                         <input type="number" id="age" name="age" placeholder="30" min="18" max="80" required>
                     </div>
 
+                    <div class="form-group">
+                        <label for="time_horizon_years">Investment Time Horizon (Years)</label>
+                        <select id="time_horizon_years" name="time_horizon_years">
+                            <option value="1">1 Year (Short-term)</option>
+                            <option value="3">3 Years</option>
+                            <option value="5" selected>5 Years</option>
+                            <option value="10">10 Years</option>
+                            <option value="15">15 Years</option>
+                            <option value="20">20+ Years (Long-term)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="risk_tolerance">Risk Tolerance</label>
+                        <select id="risk_tolerance" name="risk_tolerance">
+                            <option value="low">Low - I prefer safe investments</option>
+                            <option value="medium" selected>Medium - I want balanced growth</option>
+                            <option value="high">High - I'm comfortable with market volatility</option>
+                        </select>
+                    </div>
+
                     <button type="submit" class="submit-btn">
-                        <span>Generate My Financial Plan</span>
+                        <span id="submitText">Generate My Financial Plan</span>
                     </button>
                 </form>
             </div>
@@ -572,8 +621,8 @@
             <div class="results-section" id="resultsSection">
                 <h2 class="results-title">Your Personalized Plan</h2>
                 <div class="loading">
-                    <div class="loading-spinner"></div>
-                    <p>Fill out the form to get your personalized financial advice</p>
+                    <div class="loading-spinner" style="display: none;"></div>
+                    <p id="loadingText">Fill out the form to get your personalized financial advice powered by AI agents</p>
                 </div>
             </div>
         </div>
@@ -583,17 +632,17 @@
             <div class="feature-card">
                 <span class="feature-icon">🎯</span>
                 <h3>Goal-Based Planning</h3>
-                <p>Set specific financial targets and get tailored investment strategies to achieve them efficiently.</p>
+                <p>Set specific financial targets and get tailored investment strategies to achieve them efficiently using advanced AI analysis.</p>
             </div>
             <div class="feature-card">
                 <span class="feature-icon">📈</span>
                 <h3>Risk Analysis</h3>
-                <p>Comprehensive risk assessment based on your age, income, and financial obligations.</p>
+                <p>Comprehensive risk assessment based on your age, income, debt levels, and financial obligations using intelligent algorithms.</p>
             </div>
             <div class="feature-card">
                 <span class="feature-icon">💎</span>
                 <h3>Smart Allocation</h3>
-                <p>AI-powered asset allocation across FDs, SIPs, stocks, and gold for optimal returns.</p>
+                <p>AI-powered asset allocation across FDs, SIPs, equity, gold, and emergency funds for optimal returns with live market data.</p>
             </div>
         </div>
     </div>
@@ -638,90 +687,120 @@
             
             const resultsSection = document.getElementById('resultsSection');
             const submitBtn = document.querySelector('.submit-btn');
+            const submitText = document.getElementById('submitText');
+            const loadingSpinner = document.querySelector('.loading-spinner');
+            const loadingText = document.getElementById('loadingText');
             
             // Show loading state
             resultsSection.innerHTML = `
                 <h2 class="results-title">Analyzing Your Profile</h2>
                 <div class="loading">
                     <div class="loading-spinner"></div>
-                    <p>Our AI is crafting your personalized financial strategy...</p>
+                    <p>Our AI agents are analyzing your financial profile and crafting a personalized strategy...</p>
                 </div>
             `;
             
-            submitBtn.style.opacity = '0.7';
             submitBtn.disabled = true;
+            submitText.textContent = 'Processing...';
             
             // Collect form data
             const formData = {
                 goal: document.getElementById('goal').value,
                 income: document.getElementById('income').value.replace(/,/g, ''),
                 debt: document.getElementById('debt').value.replace(/,/g, '') || '0',
-                age: document.getElementById('age').value
+                age: document.getElementById('age').value,
+                time_horizon_years: document.getElementById('time_horizon_years').value,
+                risk_tolerance: document.getElementById('risk_tolerance').value
             };
             
             try {
-                // Simulate API call (replace with actual endpoint)
-                setTimeout(() => {
-                    displayResults({
-                        profile: {
-                            goal_amount: parseInt(formData.goal),
-                            income: parseInt(formData.income),
-                            debt: parseInt(formData.debt),
-                            age: parseInt(formData.age)
-                        },
-                        risk_analysis: "Based on your profile, you have a moderate risk tolerance. Your income-to-debt ratio is healthy, and at your age, you can afford to take calculated risks for better returns.",
-                        investment_plan: "Recommended allocation: 40% Equity SIPs for growth, 30% Fixed Deposits for stability, 20% Gold for inflation hedge, 10% Emergency fund. Target monthly saving: ₹" + (parseInt(formData.goal) / 60).toLocaleString('en-IN'),
-                        summary: "Your financial plan focuses on balanced growth with risk management. With consistent investments, you can achieve your goal while building long-term wealth."
-                    });
-                }, 3000);
+                const response = await fetch('/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
                 
-                // Uncomment for actual API call:
-                // const response = await fetch('/', {
-                //     method: 'POST',
-                //     headers: { 'Content-Type': 'application/json' },
-                //     body: JSON.stringify(formData)
-                // });
-                // const result = await response.json();
-                // displayResults(result);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                displayResults(result);
                 
             } catch (error) {
                 console.error('Error:', error);
                 resultsSection.innerHTML = `
-                    <h2 class="results-title">Analysis Complete</h2>
-                    <div class="result-card">
+                    <h2 class="results-title">Analysis Error</h2>
+                    <div class="result-card error-card">
                         <h3>⚠️ Connection Error</h3>
-                        <p>Please check your connection and try again.</p>
+                        <p>We're having trouble connecting to our AI service. Please check your connection and try again. If the problem persists, please try again in a few minutes.</p>
                     </div>
                 `;
             } finally {
-                submitBtn.style.opacity = '1';
                 submitBtn.disabled = false;
+                submitText.textContent = 'Generate My Financial Plan';
             }
         });
         
         function displayResults(data) {
             const resultsSection = document.getElementById('resultsSection');
             
-            resultsSection.innerHTML = `
-                <h2 class="results-title">Your Financial Strategy</h2>
-                
-                <div class="result-card">
-                    <h3>📊 Risk Analysis</h3>
-                    <p>${data.risk_analysis}</p>
-                </div>
-                
-                <div class="result-card">
-                    <h3>💰 Investment Plan</h3>
-                    <p>${data.investment_plan}</p>
-                </div>
-                
-                <div class="result-card">
-                    <h3>🎯 Strategic Summary</h3>
-                    <p>${data.summary}</p>
-                </div>
-            `;
+            // Format the results with proper sections
+            let resultsHTML = `<h2 class="results-title">Your AI-Generated Financial Strategy</h2>`;
             
+            if (data.profile) {
+                resultsHTML += `
+                    <div class="result-card">
+                        <h3>👤 Your Financial Profile</h3>
+                        <p><strong>Goal:</strong> ${data.profile.goal || 'Custom Financial Goal'}</p>
+                        <p><strong>Target Amount:</strong> ₹${data.profile.goal_amount?.toLocaleString('en-IN') || 'N/A'}</p>
+                        <p><strong>Monthly Income:</strong> ₹${data.profile.income?.toLocaleString('en-IN') || 'N/A'}</p>
+                        <p><strong>Current Debt:</strong> ₹${data.profile.debt?.toLocaleString('en-IN') || '0'}</p>
+                        <p><strong>Age:</strong> ${data.profile.age || 'N/A'} years</p>
+                        <p><strong>Investment Timeline:</strong> ${data.profile.time_horizon_years || 5} years</p>
+                        <p><strong>Risk Appetite:</strong> ${data.profile.risk_tolerance?.charAt(0).toUpperCase() + data.profile.risk_tolerance?.slice(1) || 'Medium'}</p>
+                    </div>
+                `;
+            }
+            
+            if (data.risk_analysis) {
+                resultsHTML += `
+                    <div class="result-card">
+                        <h3>📊 Risk & Financial Health Analysis</h3>
+                        <p>${data.risk_analysis}</p>
+                    </div>
+                `;
+            }
+            
+            if (data.investment_plan) {
+                resultsHTML += `
+                    <div class="result-card">
+                        <h3>💰 Personalized Investment Strategy</h3>
+                        <p>${data.investment_plan}</p>
+                    </div>
+                `;
+            }
+            
+            if (data.summary) {
+                resultsHTML += `
+                    <div class="result-card">
+                        <h3>🎯 Strategic Summary & Next Steps</h3>
+                        <p>${data.summary}</p>
+                    </div>
+                `;
+            }
+            
+            resultsSection.innerHTML = resultsHTML;
             resultsSection.classList.add('success-animation');
+            
+            // Scroll to results
+            resultsSection.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start' 
+            });
+            
             setTimeout(() => {
                 resultsSection.classList.remove('success-animation');
             }, 600);
@@ -729,14 +808,6 @@
         
         // Initialize effects
         createParticles();
-        
-        // Add smooth scrolling for form submission
-        document.getElementById('financeForm').addEventListener('submit', function() {
-            document.getElementById('resultsSection').scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'start' 
-            });
-        });
     </script>
 </body>
 </html>

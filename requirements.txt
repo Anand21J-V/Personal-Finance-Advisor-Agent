@@ -1,20 +1,22 @@
-# === Core Agentic & LangGraph Dependencies ===
+# === Core LangGraph + LangChain Ecosystem ===
 langgraph==0.0.40
 langchain==0.2.1
-langchain-core==0.2.0
+
+# Let langchain auto-install correct langchain-core version
+# DO NOT specify langchain-core separately
+
+# === Flask Web Framework ===
+Flask==3.0.3
+Jinja2==3.1.3
+
+# === Groq LLM ===
 groq==0.5.0
 
-# === Web Framework ===
-Flask==3.0.3
-
-# === Environment Variable Management ===
+# === Load environment variables ===
 python-dotenv==1.0.1
 
-# === HTTP Requests (for external APIs) ===
+# === For real-time API requests ===
 requests==2.31.0
 
-# === Optional: Typing Support (for modern Python typing) ===
+# === Typing + optional extras ===
 typing-extensions>=4.5.0
-
-# === Jinja2 Template Engine (used by Flask automatically) ===
-Jinja2>=3.1.2

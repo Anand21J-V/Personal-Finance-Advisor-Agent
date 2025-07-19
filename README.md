@@ -103,5 +103,5 @@ MIT License
 Pull requests are welcome! For major changes, please open an issue first to discuss what you'd like to change.
 
 ## 📬 Connect
-Made with ❤️ by [Your Name]
+Made with by Anand Kumar Vishwakarma
 DM for demo, collaboration, or feedback.

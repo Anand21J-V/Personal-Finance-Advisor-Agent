@@ -1,0 +1,742 @@
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinanceAI - Your Personal Financial Advisor</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        :root {
+            --primary-gold: #FFD700;
+            --primary-green: #00E676;
+            --dark-blue: #0A0E27;
+            --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-success: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--dark-blue);
+            overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(45deg, #0A0E27, #1a1f3a, #2d3561);
+        }
+
+        .floating-shapes {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .shape {
+            position: absolute;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .shape:nth-child(1) {
+            width: 100px;
+            height: 100px;
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .shape:nth-child(2) {
+            width: 150px;
+            height: 150px;
+            top: 70%;
+            right: 10%;
+            animation-delay: -5s;
+            background: var(--gradient-secondary);
+        }
+
+        .shape:nth-child(3) {
+            width: 80px;
+            height: 80px;
+            top: 40%;
+            left: 80%;
+            animation-delay: -10s;
+            background: var(--gradient-success);
+        }
+
+        .shape:nth-child(4) {
+            width: 120px;
+            height: 120px;
+            top: 20%;
+            right: 30%;
+            animation-delay: -15s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.7; }
+            25% { transform: translateY(-20px) rotate(90deg); opacity: 0.9; }
+            50% { transform: translateY(-40px) rotate(180deg); opacity: 0.6; }
+            75% { transform: translateY(-20px) rotate(270deg); opacity: 0.8; }
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+            padding: 40px 0;
+        }
+
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .logo-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .logo-text {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary-gold), var(--primary-green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 300;
+            margin-top: 10px;
+        }
+
+        /* Main Content */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+
+        /* Form Section */
+        .form-section {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .form-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--gradient-primary);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .form-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .form-title::before {
+            content: '💰';
+            font-size: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 16px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .form-group select option {
+            background: var(--dark-blue);
+            color: white;
+            padding: 10px;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-gold);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .currency-prefix {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary-gold);
+            font-weight: 600;
+            pointer-events: none;
+        }
+
+        .currency-input {
+            padding-left: 40px !important;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 18px;
+            background: var(--gradient-primary);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: all 0.6s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+        }
+
+        .submit-btn:hover::before {
+            left: 100%;
+        }
+
+        /* Results Section */
+        .results-section {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            min-height: 600px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .results-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .results-title::before {
+            content: '📊';
+            font-size: 2rem;
+        }
+
+        .loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-left: 4px solid var(--primary-gold);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .result-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--primary-green);
+            animation: slideInRight 0.6s ease-out;
+        }
+
+        .result-card h3 {
+            color: var(--primary-green);
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .result-card p {
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin: 80px 0;
+        }
+
+        .feature-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .feature-card h3 {
+            color: white;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .feature-card p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .form-section, .results-section {
+                padding: 25px;
+            }
+            
+            .logo-text {
+                font-size: 2rem;
+            }
+            
+            .subtitle {
+                font-size: 1rem;
+            }
+        }
+
+        /* Success Animation */
+        .success-animation {
+            animation: successPulse 0.6s ease-out;
+        }
+
+        @keyframes successPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* Particles Effect */
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--primary-gold);
+            border-radius: 50%;
+            animation: particleFloat 8s infinite linear;
+            opacity: 0.7;
+        }
+
+        @keyframes particleFloat {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.7;
+            }
+            90% {
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-animation">
+        <div class="floating-shapes">
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
+        </div>
+        <div class="particles" id="particles"></div>
+    </div>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <div class="logo-icon">₹</div>
+                <div class="logo-text">FinanceAI</div>
+            </div>
+            <p class="subtitle">Your Intelligent Personal Finance Advisor</p>
+        </header>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Form Section -->
+            <div class="form-section">
+                <h2 class="form-title">Tell Us About Your Goals</h2>
+                <form id="financeForm">
+                    <div class="form-group">
+                        <label for="goal">Financial Goal</label>
+                        <select id="goal" name="goal" required>
+                            <option value="">Select your primary goal</option>
+                            <option value="500000">Save ₹5 Lakh (Emergency Fund)</option>
+                            <option value="1000000">Save ₹10 Lakh (Home Down Payment)</option>
+                            <option value="2500000">Save ₹25 Lakh (Higher Education)</option>
+                            <option value="5000000">Save ₹50 Lakh (Retirement Planning)</option>
+                            <option value="10000000">Save ₹1 Crore (Wealth Building)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="income">Monthly Income</label>
+                        <div style="position: relative;">
+                            <span class="currency-prefix">₹</span>
+                            <input type="text" id="income" name="income" class="currency-input" 
+                                   placeholder="50,000" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="debt">Current Debt (Optional)</label>
+                        <div style="position: relative;">
+                            <span class="currency-prefix">₹</span>
+                            <input type="text" id="debt" name="debt" class="currency-input" 
+                                   placeholder="0">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="age">Your Age</label>
+                        <input type="number" id="age" name="age" placeholder="30" min="18" max="80" required>
+                    </div>
+
+                    <button type="submit" class="submit-btn">
+                        <span>Generate My Financial Plan</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Results Section -->
+            <div class="results-section" id="resultsSection">
+                <h2 class="results-title">Your Personalized Plan</h2>
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <p>Fill out the form to get your personalized financial advice</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Grid -->
+        <div class="features-grid">
+            <div class="feature-card">
+                <span class="feature-icon">🎯</span>
+                <h3>Goal-Based Planning</h3>
+                <p>Set specific financial targets and get tailored investment strategies to achieve them efficiently.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">📈</span>
+                <h3>Risk Analysis</h3>
+                <p>Comprehensive risk assessment based on your age, income, and financial obligations.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">💎</span>
+                <h3>Smart Allocation</h3>
+                <p>AI-powered asset allocation across FDs, SIPs, stocks, and gold for optimal returns.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize particles effect
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 30;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 8 + 's';
+                particle.style.animationDuration = (Math.random() * 3 + 5) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Format currency inputs
+        function formatCurrency(input) {
+            let value = input.value.replace(/[^0-9]/g, '');
+            if (value) {
+                value = parseInt(value).toLocaleString('en-IN');
+                input.value = value;
+            }
+        }
+
+        // Add currency formatting
+        document.getElementById('income').addEventListener('input', function() {
+            formatCurrency(this);
+        });
+
+        document.getElementById('debt').addEventListener('input', function() {
+            formatCurrency(this);
+        });
+
+        // Form submission
+        document.getElementById('financeForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const resultsSection = document.getElementById('resultsSection');
+            const submitBtn = document.querySelector('.submit-btn');
+            
+            // Show loading state
+            resultsSection.innerHTML = `
+                <h2 class="results-title">Analyzing Your Profile</h2>
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <p>Our AI is crafting your personalized financial strategy...</p>
+                </div>
+            `;
+            
+            submitBtn.style.opacity = '0.7';
+            submitBtn.disabled = true;
+            
+            // Collect form data
+            const formData = {
+                goal: document.getElementById('goal').value,
+                income: document.getElementById('income').value.replace(/,/g, ''),
+                debt: document.getElementById('debt').value.replace(/,/g, '') || '0',
+                age: document.getElementById('age').value
+            };
+            
+            try {
+                // Simulate API call (replace with actual endpoint)
+                setTimeout(() => {
+                    displayResults({
+                        profile: {
+                            goal_amount: parseInt(formData.goal),
+                            income: parseInt(formData.income),
+                            debt: parseInt(formData.debt),
+                            age: parseInt(formData.age)
+                        },
+                        risk_analysis: "Based on your profile, you have a moderate risk tolerance. Your income-to-debt ratio is healthy, and at your age, you can afford to take calculated risks for better returns.",
+                        investment_plan: "Recommended allocation: 40% Equity SIPs for growth, 30% Fixed Deposits for stability, 20% Gold for inflation hedge, 10% Emergency fund. Target monthly saving: ₹" + (parseInt(formData.goal) / 60).toLocaleString('en-IN'),
+                        summary: "Your financial plan focuses on balanced growth with risk management. With consistent investments, you can achieve your goal while building long-term wealth."
+                    });
+                }, 3000);
+                
+                // Uncomment for actual API call:
+                // const response = await fetch('/', {
+                //     method: 'POST',
+                //     headers: { 'Content-Type': 'application/json' },
+                //     body: JSON.stringify(formData)
+                // });
+                // const result = await response.json();
+                // displayResults(result);
+                
+            } catch (error) {
+                console.error('Error:', error);
+                resultsSection.innerHTML = `
+                    <h2 class="results-title">Analysis Complete</h2>
+                    <div class="result-card">
+                        <h3>⚠️ Connection Error</h3>
+                        <p>Please check your connection and try again.</p>
+                    </div>
+                `;
+            } finally {
+                submitBtn.style.opacity = '1';
+                submitBtn.disabled = false;
+            }
+        });
+        
+        function displayResults(data) {
+            const resultsSection = document.getElementById('resultsSection');
+            
+            resultsSection.innerHTML = `
+                <h2 class="results-title">Your Financial Strategy</h2>
+                
+                <div class="result-card">
+                    <h3>📊 Risk Analysis</h3>
+                    <p>${data.risk_analysis}</p>
+                </div>
+                
+                <div class="result-card">
+                    <h3>💰 Investment Plan</h3>
+                    <p>${data.investment_plan}</p>
+                </div>
+                
+                <div class="result-card">
+                    <h3>🎯 Strategic Summary</h3>
+                    <p>${data.summary}</p>
+                </div>
+            `;
+            
+            resultsSection.classList.add('success-animation');
+            setTimeout(() => {
+                resultsSection.classList.remove('success-animation');
+            }, 600);
+        }
+        
+        // Initialize effects
+        createParticles();
+        
+        // Add smooth scrolling for form submission
+        document.getElementById('financeForm').addEventListener('submit', function() {
+            document.getElementById('resultsSection').scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start' 
+            });
+        });
+    </script>
+</body>
+</html>

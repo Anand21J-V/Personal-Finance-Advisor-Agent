@@ -1,0 +1,20 @@
+# === Core Agentic & LangGraph Dependencies ===
+langgraph==0.0.40
+langchain==0.2.1
+langchain-core==0.2.0
+groq==0.5.0
+
+# === Web Framework ===
+Flask==3.0.3
+
+# === Environment Variable Management ===
+python-dotenv==1.0.1
+
+# === HTTP Requests (for external APIs) ===
+requests==2.31.0
+
+# === Optional: Typing Support (for modern Python typing) ===
+typing-extensions>=4.5.0
+
+# === Jinja2 Template Engine (used by Flask automatically) ===
+Jinja2>=3.1.2
